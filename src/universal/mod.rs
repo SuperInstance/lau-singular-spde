@@ -14,12 +14,11 @@ use nalgebra::{DVector, DMatrix};
 use serde::{Serialize, Deserialize};
 use crate::spde::{
     AgentSPDE, NonlinearityType, SingularityClass,
-    classify_singularity, discrete_laplacian, euler_maruyama_step, solve_spde,
+    solve_spde,
     energy_functional,
 };
-use crate::rg::{FixedPoint, BetaFunction, CouplingSpace, RGFlow, FixedPointStability};
+use crate::rg::{FixedPoint, BetaFunction};
 use crate::wick::WickProduct;
-use crate::holders::holder_exponent;
 
 /// Universal learning class for agent dynamics.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -149,10 +148,8 @@ impl AllenCahnDynamics {
     /// Classify singularity.
     pub fn singularity(&self) -> SingularityClass {
         // Allen-Cahn has φ³ nonlinearity
-        if self.spatial_dim >= 2 {
-            SingularityClass::Singular
-        } else if self.spatial_dim == 1 {
-            SingularityClass::Singular // φ³·ξ still singular in 1d
+        if self.spatial_dim >= 1 {
+            SingularityClass::Singular // φ³·ξ singular in all dims ≥ 1
         } else {
             SingularityClass::Regular
         }

@@ -8,10 +8,12 @@
 //! The key insight: agent learning dynamics can be formulated as fixed points
 //! of a reconstruction operator acting on modelled distributions.
 
-use nalgebra::{DVector, DMatrix};
+use nalgebra::DVector;
+#[cfg(test)]
+use nalgebra::DMatrix;
 use serde::{Serialize, Deserialize};
 use std::collections::BTreeMap;
-use crate::spde::{AgentSPDE, SingularityClass, NonlinearityType, classify_singularity};
+use crate::spde::{AgentSPDE, NonlinearityType};
 
 /// A symbol in the regularity structure, representing an abstract basis element.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

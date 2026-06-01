@@ -55,15 +55,13 @@ pub fn holder_exponent(spatial_dim: usize, nonlinearity: NonlinearityType) -> Ho
         },
         NonlinearityType::Quadratic | NonlinearityType::GradientSquared => {
             // KPZ-type: u² or (∇u)² loses regularity
-            let product_loss = linear_regularity; // u·u loses this much
+            let _product_loss = linear_regularity; // u·u loses this much
             let kpz_regularity = linear_regularity - 0.5; // KPZ correction
             HolderRegularity {
                 exponent: kpz_regularity,
                 is_function: kpz_regularity > 0.0,
                 spatial_dim,
-                description: format!(
-                    "KPZ-type: quadratic nonlinearity reduces α by ~0.5"
-                ),
+                description: "KPZ-type: quadratic nonlinearity reduces α by ~0.5".to_string(),
             }
         }
         NonlinearityType::Cubic => {
@@ -73,9 +71,7 @@ pub fn holder_exponent(spatial_dim: usize, nonlinearity: NonlinearityType) -> Ho
                 exponent: phi4_regularity,
                 is_function: phi4_regularity > 0.0,
                 spatial_dim,
-                description: format!(
-                    "Φ⁴-type: cubic nonlinearity reduces α by ~1.0"
-                ),
+                description: "Φ⁴-type: cubic nonlinearity reduces α by ~1.0".to_string(),
             }
         }
         NonlinearityType::Polynomial(deg) => {
@@ -106,6 +102,7 @@ pub fn empirical_holder_exponent(trajectory: &[DVector<f64>]) -> f64 {
     let mut count = 0;
 
     for t in 0..trajectory.len() - 2 {
+        #[allow(clippy::needless_range_loop)]
         for i in 0..n.min(trajectory[t].len()).min(trajectory[t + 1].len()).min(trajectory[t + 2].len()) {
             let inc1 = (trajectory[t + 1][i] - trajectory[t][i]).abs();
             let inc2 = (trajectory[t + 2][i] - trajectory[t + 1][i]).abs();

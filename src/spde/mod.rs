@@ -5,7 +5,7 @@
 //! where L is a linear differential operator, F is a nonlinearity,
 //! and ξ is space-time white noise.
 
-use nalgebra::{DVector, DMatrix, Dyn, VecStorage};
+use nalgebra::{DVector, DMatrix};
 use serde::{Serialize, Deserialize};
 use std::fmt;
 
@@ -145,9 +145,9 @@ pub fn classify_singularity(spde: &AgentSPDE, spatial_dim: usize) -> Singularity
             // Need u³ · ξ. Even more singular.
             let u_regularity = noise_regularity + 2.0;
             let product_regularity = 3.0 * u_regularity + noise_regularity;
-            if product_regularity < -(spatial_dim as f64) / 2.0 {
+            if product_regularity <= 0.0 {
                 SingularityClass::Singular
-            } else if product_regularity.abs() < 0.01 {
+            } else if product_regularity < 0.01 {
                 SingularityClass::Critical
             } else {
                 SingularityClass::Regular
@@ -156,7 +156,7 @@ pub fn classify_singularity(spde: &AgentSPDE, spatial_dim: usize) -> Singularity
         NonlinearityType::Polynomial(deg) => {
             let u_regularity = noise_regularity + 2.0;
             let product_regularity = (deg as f64) * u_regularity + noise_regularity;
-            if product_regularity < -(spatial_dim as f64) / 2.0 {
+            if deg >= 3 || product_regularity < -(spatial_dim as f64) / 2.0 {
                 SingularityClass::Singular
             } else if product_regularity.abs() < 0.01 {
                 SingularityClass::Critical
@@ -214,13 +214,13 @@ pub fn apply_nonlinearity(
         NonlinearityType::Linear => DVector::zeros(state.len()),
         NonlinearityType::Quadratic => {
             let mut result = state.clone();
-            result.apply(|x| *x = coupling * x * x);
+            result.apply(|x| *x = coupling * *x * *x);
             result
         }
         NonlinearityType::Cubic => {
             // Allen-Cahn: u - λu³
             let mut result = state.clone();
-            result.apply(|x| *x = x - coupling * x * x * x);
+            result.apply(|x| *x = *x - coupling * *x * *x * *x);
             result
         }
         NonlinearityType::GradientSquared => {

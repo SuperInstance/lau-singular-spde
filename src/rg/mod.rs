@@ -8,7 +8,7 @@
 //! - Fixed points: scale-invariant dynamics (universal learning behavior)
 //! - Relevant/irrelevant perturbations: stability of fixed points
 
-use nalgebra::{DVector, DMatrix};
+use nalgebra::DVector;
 use serde::{Serialize, Deserialize};
 use std::fmt;
 
@@ -64,7 +64,7 @@ impl CouplingSpace {
 
 /// β-function for the coupling constant.
 /// β(λ) = dλ/dt where t = ln(scale).
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum BetaFunction {
     /// Φ⁴ in d < 4: β(λ) = (4-d)λ - aλ² (super-renormalizable)
     Phi4SuperRenorm { dim: usize, coefficient: f64 },
@@ -127,7 +127,7 @@ impl BetaFunction {
                 }
                 fps
             }
-            BetaFunction::KPZ { dim } => {
+            BetaFunction::KPZ { dim: _ } => {
                 vec![0.0] // Only Gaussian FP in this approximation
             }
             BetaFunction::Custom { .. } => {

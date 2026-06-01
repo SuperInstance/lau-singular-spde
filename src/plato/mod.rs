@@ -7,17 +7,13 @@
 //! This module maps PLATO agent types to their SPDE classification and
 //! determines which ones need the full renormalization machinery.
 
-use nalgebra::{DVector, DMatrix};
+use nalgebra::DMatrix;
 use serde::{Serialize, Deserialize};
 use crate::spde::{
-    AgentSPDE, NonlinearityType, SingularityClass,
-    classify_singularity, WhiteNoise, discrete_laplacian, euler_maruyama_step,
+    AgentSPDE, NonlinearityType, SingularityClass, classify_singularity,
 };
-use crate::regularity::{Model, ModelledDistribution, Symbol, build_structure};
-use crate::wick::{WickProduct, RenormalizedSPDE, Phi4Renormalization};
-use crate::rg::{FixedPoint, BetaFunction, CouplingSpace, RGFlow};
-use crate::universal::{UniversalClass, classify_universal, critical_exponents, KPZDynamics, AllenCahnDynamics, Phi4Dynamics};
-use crate::holders::{HolderRegularity, holder_exponent, needs_renormalization};
+use crate::universal::{UniversalClass, classify_universal};
+use crate::holders::{HolderRegularity, needs_renormalization, holder_exponent};
 
 /// PLATO agent types with their learning dynamics classification.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

@@ -160,8 +160,11 @@ impl Phi4Renormalization {
         let mass_counterterm = if d > 2.0 {
             coupling * (cutoff.powf(d - 2.0) / (2.0 * std::f64::consts::PI).powf(d / 2.0))
                 * gamma_integral(d, mass, cutoff)
+        } else if d > 0.0 {
+            // For d < 2: integral converges, ∫ dp/(p²+m²) ~ π/m
+            coupling / (mass * (2.0 * std::f64::consts::PI).powf(d / 2.0))
         } else {
-            coupling * (cutoff.powf(d - 2.0)).ln() / (2.0 * std::f64::consts::PI).powf(d / 2.0)
+            0.0
         };
 
         // Field strength Z = 1 + O(λ²) — no one-loop correction in Φ⁴
@@ -244,7 +247,7 @@ impl RenormalizedSPDE {
     pub fn wick_nonlinearity(&self, phi: &DVector<f64>) -> DVector<f64> {
         let c = self.wick_constant;
         let mut result = phi.clone();
-        result.apply(|u| *u = u * u * u - 3.0 * c * u);
+        result.apply(|u| *u = *u * *u * *u - 3.0 * c * *u);
         result
     }
 
